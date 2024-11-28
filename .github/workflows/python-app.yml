@@ -30,7 +30,7 @@ jobs:
       max-parallel: 4
     continue-on-error: true
     outputs:
-      status: ${{ steps.check-status.outputs.has_failure }}
+      has_failure: ${{ steps.check-status.outputs.has_failure }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -41,12 +41,14 @@ jobs:
           set +e
           echo "Processing event: ${{ toJson(matrix.event) }}"
           python3 scripts/process-one-event.py 'MY_ACTION' '${{ toJson(matrix.event) }}'
+          exitcode="$?"
           if [ $? -ne 0 ]; then
             echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
             echo "has_failure=yes" >> $GITHUB_OUTPUT
           else
             echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
           fi
+          exit "$exitcode"
 
   final-check:
     needs: process-events
