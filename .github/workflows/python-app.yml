@@ -29,23 +29,46 @@ jobs:
         event: ${{ fromJson(needs.generate-events.outputs.events) }}
       max-parallel: 4
     continue-on-error: true
+    outputs:
+      status: ${{ steps.check-status.outputs.status }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Process event
+        id: check-status
         run: |
           echo "Processing event: ${{ toJson(matrix.event) }}"
           python3 scripts/process-one-event.py 'MY_ACTION' '${{ toJson(matrix.event) }}'
+          if [ $? -ne 0 ]; then
+            echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
+            echo "status=failure" >> $GITHUB_ENV
+          else
+            echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
+            echo "status=success" >> $GITHUB_ENV
+          fi
+
+      - name: Set job status
+        id: set-job-status
+        run: echo "::set-output name=status::${{ env.status }}"
 
   final-check:
     needs: process-events
     runs-on: ubuntu-latest
     steps:
-      - name: Check for failures
+      - name: Aggregate job statuses
+        id: aggregate-statuses
         run: |
-          if [[ "${{ job.status }}" == "failure" ]]; then
-            echo "Some events failed to process."
+          failure_detected=false
+          for status in ${{ needs.process-events.outputs.status }}; do
+            if [[ "$status" == "failure" ]]; then
+              failure_detected=true
+              break
+            fi
+          done
+
+          if [ "$failure_detected" == "true" ]; then
+            echo "One or more events failed to process."
             exit 1
           else
             echo "All events processed successfully."
