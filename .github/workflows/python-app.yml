@@ -43,9 +43,8 @@ jobs:
           if [ $? -ne 0 ]; then
             echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
             echo "has_failure=yes" >> $GITHUB_OUTPUT
-#          else
-#            echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
-#            echo "status=success" >> $GITHUB_ENV
+          else
+            echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
           fi
 
   final-check:
