@@ -44,7 +44,7 @@ jobs:
           exitcode="$?"
           if [ $exitcode -ne 0 ]; then
             echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
-            echo "has_failure=yes" >> $GITHUB_OUTPUT
+            echo "has_failure=TRUE" >> $GITHUB_OUTPUT
           else
             echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
           fi
@@ -58,3 +58,9 @@ jobs:
         id: aggregate-statuses
         run: |
           echo HAS_FAILURE = ${{ needs.process-events.outputs.has_failure }}
+          if [ ${{ needs.process-events.outputs.has_failure }} == 'TRUE' ]; then
+            echo "At least one iteration failed!"
+            exit 1
+          else
+            echo "All iterations succeeded."
+          fi
