@@ -6,6 +6,8 @@ on:
 jobs:
   generate-events:
     runs-on: ubuntu-latest
+    outputs:
+      events: ${{ steps.get-events.outputs.events }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,8 +20,6 @@ jobs:
           echo Events = $events
           echo ---------
           echo "events=$events" >> $GITHUB_OUTPUT
-    outputs:
-      events: ${{ steps.get-events.outputs.events }}
 
   process-events:
     needs: generate-events
@@ -30,7 +30,7 @@ jobs:
       max-parallel: 4
     continue-on-error: true
     outputs:
-      status: ${{ steps.check-status.outputs.status }}
+      status: ${{ steps.check-status.outputs.has_failure }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -42,15 +42,11 @@ jobs:
           python3 scripts/process-one-event.py 'MY_ACTION' '${{ toJson(matrix.event) }}'
           if [ $? -ne 0 ]; then
             echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
-            echo "status=failure" >> $GITHUB_ENV
-          else
-            echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
-            echo "status=success" >> $GITHUB_ENV
+            echo "has_failure=yes" >> $GITHUB_OUTPUT
+#          else
+#            echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
+#            echo "status=success" >> $GITHUB_ENV
           fi
-
-      - name: Set job status
-        id: set-job-status
-        run: echo "::set-output name=status::${{ env.status }}"
 
   final-check:
     needs: process-events
@@ -59,17 +55,4 @@ jobs:
       - name: Aggregate job statuses
         id: aggregate-statuses
         run: |
-          failure_detected=false
-          for status in ${{ needs.process-events.outputs.status }}; do
-            if [[ "$status" == "failure" ]]; then
-              failure_detected=true
-              break
-            fi
-          done
-
-          if [ "$failure_detected" == "true" ]; then
-            echo "One or more events failed to process."
-            exit 1
-          else
-            echo "All events processed successfully."
-          fi
+          echo HAS_FAILURE = ${{ needs.process-events.outputs.has_failure }}
