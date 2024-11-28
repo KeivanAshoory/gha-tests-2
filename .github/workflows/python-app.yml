@@ -41,7 +41,6 @@ jobs:
           set +e
           echo "Processing event: ${{ toJson(matrix.event) }}"
           python3 scripts/process-one-event.py 'MY_ACTION' '${{ toJson(matrix.event) }}'
-          echo "Processing done. ========"
           if [ $? -ne 0 ]; then
             echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
             echo "has_failure=yes" >> $GITHUB_OUTPUT
