@@ -13,9 +13,9 @@ def main(action_str, event_str):
         print('Invalid event!')
         sys.exit(2)
 
-    delay = random.randint(2, 10)
+    delay = random.randint(2, 5)
     success = random.randint(0, 4)
-    success = 0
+    success = 1
     print(f'sleep for {delay}')
     time.sleep(delay)
     if success == 0:
