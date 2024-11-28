@@ -58,7 +58,7 @@ jobs:
         id: aggregate-statuses
         run: |
           echo HAS_FAILURE = ${{ needs.process-events.outputs.has_failure }}
-          if [ ${{ needs.process-events.outputs.has_failure }} == 'TRUE' ]; then
+          if [ ${{ needs.process-events.outputs.has_failure }} == "TRUE" ]; then
             echo "At least one iteration failed!"
             exit 1
           else
