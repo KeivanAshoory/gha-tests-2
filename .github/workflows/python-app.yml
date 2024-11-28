@@ -13,7 +13,7 @@ jobs:
       - name: Generate events
         id: get-events
         run: |
-          events=$(python3 ./scripts/prepare-all-events.py)
+          events=$(python3 scripts/prepare-all-events.py)
           echo "events=$events" >> $GITHUB_OUTPUT
     outputs:
       events: ${{ steps.get-events.outputs.events }}
@@ -32,4 +32,4 @@ jobs:
       - name: Process event
         run: |
           echo "Processing event: ${{ matrix.event }}"
-          python3 ./scripts/process-one-event.py '${{ matrix.event }}'
+          python3 scripts/process-one-event.py '${{ matrix.event }}'
