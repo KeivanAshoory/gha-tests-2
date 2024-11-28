@@ -15,7 +15,7 @@ def main(action_str, event_str):
 
     delay = random.randint(2, 10)
     success = random.randint(0, 4)
-
+    success = 0
     print(f'sleep for {delay}')
     time.sleep(delay)
     if success == 0:
