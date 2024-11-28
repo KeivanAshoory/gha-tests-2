@@ -14,6 +14,9 @@ jobs:
         id: get-events
         run: |
           events=$(python3 scripts/prepare-all-events.py)
+          echo ---------
+          echo Events = $events
+          echo ---------
           echo "events=$events" >> $GITHUB_OUTPUT
     outputs:
       events: ${{ steps.get-events.outputs.events }}
