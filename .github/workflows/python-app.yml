@@ -28,6 +28,7 @@ jobs:
       matrix:
         event: ${{ fromJson(needs.generate-events.outputs.events) }}
       max-parallel: 4
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
