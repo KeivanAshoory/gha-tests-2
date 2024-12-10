@@ -14,7 +14,7 @@ def main(action_str, event_str):
         sys.exit(2)
 
     delay = random.randint(2, 5)
-    success = random.randint(0, 4)
+    success = random.randint(0, 1)
 
     print(f'sleep for {delay}')
     time.sleep(delay)
