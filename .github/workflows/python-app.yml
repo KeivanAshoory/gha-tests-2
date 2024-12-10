@@ -44,16 +44,20 @@ jobs:
             return $?
           }
           echo "Processing event: ${{ toJson(matrix.event) }}"
+          
           my_cmd
           exitcode="$?"
           if [ $exitcode -ne 0 ]; then
-            echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
+            echo "\nScript failed. Trying again ..."
+            my_cmd
+            exitcode="$?"
+          fi
+          if [ $exitcode -ne 0 ]; then
+            echo "\nScript failed."
             echo "has_failure=TRUE" >> $GITHUB_OUTPUT
-          else
-            echo "script2.py succeeded for event: ${{ toJson(matrix.event) }}"
           fi
           exit "$exitcode"
-
+          
   final-check:
     needs: process-events
     runs-on: ubuntu-latest
