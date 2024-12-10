@@ -39,9 +39,12 @@ jobs:
         id: check-status
         run: |
           set +e
-          CMD='python3 scripts/process-one-event.py "MY_ACTION" "${{ toJson(matrix.event) }}"'
+          my_cmd() {
+            python3 scripts/process-one-event.py 'MY_ACTION' '${{ toJson(matrix.event) }}'
+            return $?
+          }
           echo "Processing event: ${{ toJson(matrix.event) }}"
-          $CMD
+          my_cmd
           exitcode="$?"
           if [ $exitcode -ne 0 ]; then
             echo "script2.py failed for event: ${{ toJson(matrix.event) }}"
