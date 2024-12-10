@@ -39,7 +39,7 @@ jobs:
         id: check-status
         run: |
           set +e
-          CMD='python3 scripts/process-one-event.py '\''MY_ACTION'\'' '\''${{ toJson(matrix.event) }}'\'''
+          CMD='python3 scripts/process-one-event.py "MY_ACTION" "${{ toJson(matrix.event) }}"'
           echo "Processing event: ${{ toJson(matrix.event) }}"
           $CMD
           exitcode="$?"
